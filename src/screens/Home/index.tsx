@@ -1,4 +1,4 @@
-import { Text, View, TextInput, TouchableOpacity, ScrollView } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, FlatList, Alert } from "react-native";
 import { Participant } from "../../components/Participant";
 
 import { styles } from './styles'
@@ -20,11 +20,24 @@ export default function Home() {
   ]
 
   function handleParticipanteAdd() {
+    if(participants.some(participant => participant.name === "Elias")) {
+      return Alert.alert('participantes existe', "paticipante já existe na lista!")
+    }
+
     console.log("você adicionou um participante")
   }
 
   function handleParticipanteRemove(name: string) {
-    console.log(`usuario ${name} removido`)
+    Alert.alert("remover", `Remover o participante ${name}?`, [
+      {
+        text: 'Sim',
+        onPress: () => Alert.alert("deletado")
+      },
+      {
+        text: 'Não',
+        style: 'cancel'
+      }
+    ])
   }
 
   return (
@@ -53,18 +66,18 @@ export default function Home() {
         </TouchableOpacity> 
       </View>
 
-      <ScrollView showsHorizontalScrollIndicator={false}>
-        {
-          participants.map((participant) => (
-            <Participant
-              key={participant.id}
-              name={participant.name}
-              onRemove={() => handleParticipanteRemove("elias")}
+      <FlatList
+        data={participants}
+        renderItem={({ item }) => (
+          <Participant
+              key={item.id}
+              name={item.name}
+              onRemove={() => handleParticipanteRemove(item.name)}
             />
-          ))
-        }
-      </ScrollView>
-      
+        )}
+        showsVerticalScrollIndicator={false}
+        // keyExtractor={item => item.name}
+      />
     </View>
   )
 }
